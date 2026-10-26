@@ -180,10 +180,11 @@ function Index() {
                   </div>
                 </div>
                 <div className="mt-4 flex gap-1 border-b text-xs">
-                  {["Genel", "Varyantlar (3)", "Birimler", "Fiyatlar", "Stok", "Tedarikçiler", "Geçmiş"].map((t, i) => (
+                  {["Genel", "Varyantlar (12)", "Birimler", "Fiyatlar", "Stok", "Tedarikçiler", "Geçmiş"].map((t, i) => (
                     <button key={t} onClick={() => setDTab(i)} className={`px-3 py-2 -mb-px ${dTab === i ? "border-b-2 border-primary font-semibold text-primary" : "text-foreground/80"}`}>{t}</button>
                   ))}
                 </div>
+                {dTab === 1 ? <VariantMatrix /> : (<>
                 <div className="mt-3 flex gap-4 text-xs">
                   <div className="flex-[1.6]">
                     <div className="mb-2 font-semibold text-sm">Temel Bilgiler</div>
@@ -214,6 +215,7 @@ function Index() {
                   <button className="inline-flex h-8 items-center gap-2 rounded-md border px-3"><ArrowLeftRight className="size-4" />Stok Hareketi</button>
                   <button className="inline-flex h-8 items-center gap-2 rounded-md border px-3"><Copy className="size-4" />Ürünü Kopyala</button>
                 </div>
+                </>)}
               </div>
             </div>
           </div>
