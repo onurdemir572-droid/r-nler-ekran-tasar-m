@@ -54,7 +54,7 @@ function Index() {
   const [sel, setSel] = useState(0);
   const [tab, setTab] = useState(0);
   const [dTab, setDTab] = useState(0);
-  const p = products[sel];
+  const p = products[sel] ?? products[0]!;
   return (
     <div className="min-h-screen bg-background text-foreground text-sm">
       {/* Header */}
