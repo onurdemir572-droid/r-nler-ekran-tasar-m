@@ -277,23 +277,23 @@ function VariantMatrix() {
       </div>
 
       <div className="mt-3 flex items-center gap-2">
-        <div className="flex-1 rounded-md bg-accent px-2 py-2 text-accent-foreground">{counts.join(" × ")} = {total} kombinasyon (Seçili: {selected})</div>
+        <div className="flex-1 whitespace-nowrap rounded-md bg-accent px-2 py-2 text-[11px] text-accent-foreground">{counts.join(" × ")} = {total} kombinasyon (Seçili: {selected})</div>
         <button className="inline-flex h-8 items-center rounded-md border px-2">Oluşturulacakları Göster</button>
         <button onClick={() => setRows((r) => r.map((x) => ({ ...x, on: true })))} className="inline-flex h-8 items-center rounded-md border px-2">✓ Tümünü Seç</button>
         <button className="inline-flex h-8 items-center rounded-md bg-primary px-3 font-medium text-primary-foreground">Seçilenleri Oluştur</button>
       </div>
 
-      <table className="mt-3 w-full">
+      <table className="mt-3 w-full whitespace-nowrap text-[11px]">
         <thead><tr className="border-b text-left font-semibold">
-          <th className="p-1.5 w-6" />{["Renk", "Ebat", "Yüzey", "SKU", "Barkod", "Stok", "Fiyat", "Durum"].map((h) => <th key={h} className="p-1.5">{h}</th>)}<th />
+          <th className="p-1.5 w-6" />{["Renk", "Ebat", "Yüzey", "SKU", "Barkod", "Stok", "Fiyat", "Durum"].map((h) => <th key={h} className="px-1 py-1.5">{h}</th>)}<th />
         </tr></thead>
         <tbody>
           {rows.map((r, i) => (
             <tr key={r.sku} className="border-b">
-              <td className="p-1.5"><input type="checkbox" className="accent-primary" checked={r.on} onChange={() => setRows((s) => s.map((x, j) => (j === i ? { ...x, on: !x.on } : x)))} /></td>
-              <td className="p-1.5">{r.renk}</td><td className="p-1.5">{r.ebat}</td><td className="p-1.5">{r.yuzey}</td>
-              <td className="p-1.5">{r.sku}</td><td className="p-1.5 text-muted-foreground">{r.bc}</td><td className="p-1.5">{r.stok}</td><td className="p-1.5">{r.fiyat}</td>
-              <td className="p-1.5"><span className={`rounded px-1.5 py-0.5 ${r.durum === "Aktif" ? "bg-success-soft text-success-foreground" : "bg-danger-soft text-destructive"}`}>{r.durum}</span></td>
+              <td className="px-1 py-1.5"><input type="checkbox" className="accent-primary" checked={r.on} onChange={() => setRows((s) => s.map((x, j) => (j === i ? { ...x, on: !x.on } : x)))} /></td>
+              <td className="px-1 py-1.5">{r.renk}</td><td className="px-1 py-1.5">{r.ebat}</td><td className="px-1 py-1.5">{r.yuzey}</td>
+              <td className="px-1 py-1.5">{r.sku}</td><td className="px-1 py-1.5 text-muted-foreground">{r.bc}</td><td className="px-1 py-1.5">{r.stok}</td><td className="px-1 py-1.5">{r.fiyat}</td>
+              <td className="px-1 py-1.5"><span className={`rounded px-1.5 py-0.5 ${r.durum === "Aktif" ? "bg-success-soft text-success-foreground" : "bg-danger-soft text-destructive"}`}>{r.durum}</span></td>
               <td><MoreVertical className="size-3.5 text-muted-foreground" /></td>
             </tr>
           ))}
