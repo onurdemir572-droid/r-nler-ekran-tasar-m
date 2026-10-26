@@ -53,7 +53,7 @@ function Select({ label }: { label: string }) {
 function Index() {
   const [sel, setSel] = useState(0);
   const [tab, setTab] = useState(0);
-  const [dTab, setDTab] = useState(0);
+  const [dTab, setDTab] = useState(1);
   const p = products[sel] ?? products[0]!;
   return (
     <div className="min-h-screen bg-background text-foreground text-sm">
@@ -180,10 +180,11 @@ function Index() {
                   </div>
                 </div>
                 <div className="mt-4 flex gap-1 border-b text-xs">
-                  {["Genel", "Varyantlar (3)", "Birimler", "Fiyatlar", "Stok", "Tedarikçiler", "Geçmiş"].map((t, i) => (
+                  {["Genel", "Varyantlar (12)", "Birimler", "Fiyatlar", "Stok", "Tedarikçiler", "Geçmiş"].map((t, i) => (
                     <button key={t} onClick={() => setDTab(i)} className={`px-3 py-2 -mb-px ${dTab === i ? "border-b-2 border-primary font-semibold text-primary" : "text-foreground/80"}`}>{t}</button>
                   ))}
                 </div>
+                {dTab === 1 ? <VariantMatrix /> : (<>
                 <div className="mt-3 flex gap-4 text-xs">
                   <div className="flex-[1.6]">
                     <div className="mb-2 font-semibold text-sm">Temel Bilgiler</div>
@@ -214,11 +215,90 @@ function Index() {
                   <button className="inline-flex h-8 items-center gap-2 rounded-md border px-3"><ArrowLeftRight className="size-4" />Stok Hareketi</button>
                   <button className="inline-flex h-8 items-center gap-2 rounded-md border px-3"><Copy className="size-4" />Ürünü Kopyala</button>
                 </div>
+                </>)}
               </div>
             </div>
           </div>
         </main>
       </div>
+    </div>
+  );
+}
+
+type Attr = { name: string; values: { v: string; on: boolean }[] };
+type Row = { renk: string; ebat: string; yuzey: string; sku: string; bc: string; stok: string; fiyat: string; durum: "Aktif" | "Taslak"; on: boolean };
+
+const initialRows: Row[] = [
+  { renk: "Beyaz", ebat: "60 × 60", yuzey: "Parlak", sku: "SRM-6060-01", bc: "8691234567890", stok: "240 m²", fiyat: "₺450,00", durum: "Aktif", on: true },
+  { renk: "Beyaz", ebat: "60 × 60", yuzey: "Mat", sku: "SRM-6060-02", bc: "8691234567891", stok: "180 m²", fiyat: "₺440,00", durum: "Aktif", on: true },
+  { renk: "Beyaz", ebat: "60 × 120", yuzey: "Parlak", sku: "SRM-6120-01", bc: "8691234567892", stok: "120 m²", fiyat: "₺520,00", durum: "Aktif", on: true },
+  { renk: "Beyaz", ebat: "60 × 120", yuzey: "Mat", sku: "SRM-6120-02", bc: "8691234567893", stok: "85 m²", fiyat: "₺510,00", durum: "Aktif", on: true },
+  { renk: "Gri", ebat: "60 × 60", yuzey: "Parlak", sku: "SRM-6060-03", bc: "-", stok: "0 m²", fiyat: "₺460,00", durum: "Taslak", on: false },
+  { renk: "Gri", ebat: "60 × 60", yuzey: "Mat", sku: "SRM-6060-04", bc: "-", stok: "0 m²", fiyat: "₺450,00", durum: "Taslak", on: false },
+  { renk: "Antrasit", ebat: "30 × 60", yuzey: "Parlak", sku: "SRM-3060-01", bc: "-", stok: "0 m²", fiyat: "₺380,00", durum: "Taslak", on: false },
+];
+
+function VariantMatrix() {
+  const [attrs, setAttrs] = useState<Attr[]>([
+    { name: "Renk", values: ["Beyaz", "Gri", "Antrasit"].map((v) => ({ v, on: true })) },
+    { name: "Ebat", values: ["30 × 60", "60 × 60", "60 × 120"].map((v) => ({ v, on: true })) },
+    { name: "Yüzey", values: ["Mat", "Parlak"].map((v) => ({ v, on: true })) },
+  ]);
+  const [rows, setRows] = useState(initialRows);
+  const counts = attrs.map((a) => a.values.filter((x) => x.on).length);
+  const total = counts.reduce((a, b) => a * b, 1);
+  const selected = rows.filter((r) => r.on).length;
+  const toggleVal = (ai: number, vi: number) =>
+    setAttrs((s) => s.map((a, i) => (i !== ai ? a : { ...a, values: a.values.map((x, j) => (j === vi ? { ...x, on: !x.on } : x)) })));
+
+  return (
+    <div className="mt-3 text-xs">
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="text-base font-semibold">Varyant Matrisi</div>
+          <div className="text-muted-foreground">Bu ürün ailesi için varyant özelliklerini tanımlayın ve kombinasyonları yönetin.</div>
+        </div>
+        <a className="font-medium text-primary">ⓘ Nasıl Çalışır?</a>
+      </div>
+
+      <div className="mt-3 grid grid-cols-4 gap-2">
+        {attrs.map((a, ai) => (
+          <div key={a.name} className="rounded-md border p-2.5">
+            <div className="mb-1.5 flex justify-between font-medium">{a.name} ({a.values.length})<span className="text-muted-foreground">×</span></div>
+            {a.values.map((x, vi) => (
+              <label key={x.v} className="flex items-center gap-2 py-0.5"><input type="checkbox" className="accent-primary" checked={x.on} onChange={() => toggleVal(ai, vi)} />{x.v}</label>
+            ))}
+            <div className="mt-1.5 text-primary">+ Değer Ekle</div>
+          </div>
+        ))}
+        <div className="flex flex-col items-center justify-center rounded-md border border-dashed p-2 text-center text-muted-foreground">
+          <Plus className="size-4" /><div className="mt-1 text-foreground">Varyant Özelliği Ekle</div><div className="text-[10px]">(Örn. Kalınlık, Desen, Seri)</div>
+        </div>
+      </div>
+
+      <div className="mt-3 flex items-center gap-2">
+        <div className="flex-1 whitespace-nowrap rounded-md bg-accent px-2 py-2 text-[11px] text-accent-foreground">{counts.join(" × ")} = {total} kombinasyon (Seçili: {selected})</div>
+        <button className="inline-flex h-8 items-center rounded-md border px-2">Oluşturulacakları Göster</button>
+        <button onClick={() => setRows((r) => r.map((x) => ({ ...x, on: true })))} className="inline-flex h-8 items-center rounded-md border px-2">✓ Tümünü Seç</button>
+        <button className="inline-flex h-8 items-center rounded-md bg-primary px-3 font-medium text-primary-foreground">Seçilenleri Oluştur</button>
+      </div>
+
+      <table className="mt-3 w-full whitespace-nowrap text-[11px]">
+        <thead><tr className="border-b text-left font-semibold">
+          <th className="p-1.5 w-6" />{["Renk", "Ebat", "Yüzey", "SKU", "Barkod", "Stok", "Fiyat", "Durum"].map((h) => <th key={h} className="px-1 py-1.5">{h}</th>)}<th />
+        </tr></thead>
+        <tbody>
+          {rows.map((r, i) => (
+            <tr key={r.sku} className="border-b">
+              <td className="px-1 py-1.5"><input type="checkbox" className="accent-primary" checked={r.on} onChange={() => setRows((s) => s.map((x, j) => (j === i ? { ...x, on: !x.on } : x)))} /></td>
+              <td className="px-1 py-1.5">{r.renk}</td><td className="px-1 py-1.5">{r.ebat}</td><td className="px-1 py-1.5">{r.yuzey}</td>
+              <td className="px-1 py-1.5">{r.sku}</td><td className="px-1 py-1.5 text-muted-foreground">{r.bc}</td><td className="px-1 py-1.5">{r.stok}</td><td className="px-1 py-1.5">{r.fiyat}</td>
+              <td className="px-1 py-1.5"><span className={`rounded px-1.5 py-0.5 ${r.durum === "Aktif" ? "bg-success-soft text-success-foreground" : "bg-danger-soft text-destructive"}`}>{r.durum}</span></td>
+              <td><MoreVertical className="size-3.5 text-muted-foreground" /></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
